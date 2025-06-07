@@ -10,19 +10,16 @@ compatibility_date = "2025-06-07" # You can update this to the current date or a
 # specify its entry point here. For many Next.js on Cloudflare setups (e.g., using @cloudflare/next-on-pages),
 # this would point to a generated worker file.
 # Example: main = ".vercel/output/functions/__next_launcher.func/index.js"
-# main = "src/index.ts"
+# main = "src/index.ts" # This is a placeholder, might need adjustment for Next.js server
 
-# The `wrangler deploy` command requires an assets directory.
-# With `output: 'export'` in next.config.ts, Next.js will build static assets to the "out/" directory by default.
-# Ensure your Cloudflare build command runs `npm run build` (which executes `next build`).
-[assets]
-directory = "./out" # Changed from "./dist" to "./out"
-# include = ["**/*"] # Optional: By default, all files in the directory are included.
-# exclude = []      # Optional: Specify files or patterns to exclude.
+# The assets directory configuration is typically for static assets with `wrangler deploy`.
+# For a full-stack Next.js app on Cloudflare Pages, Pages handles the build output.
+# If deploying as a Worker, the configuration for serving Next.js is more complex.
+# [assets]
+# directory = "./out" # REMOVED: No longer exporting to out/
 
-# If you are using Cloudflare Pages and not `wrangler deploy` directly for a worker with assets,
-# your wrangler.toml might look different or these settings might be in the Cloudflare dashboard.
-# For example, for Pages, you might use:
-# pages_build_output_dir = "out"
+# For Cloudflare Pages, you might define build commands and output directory in the dashboard or use a pages_build_output_dir.
+# Example for Pages if configured via wrangler.toml (often done in dashboard):
+# pages_build_output_dir = ".next"
 # [build]
 # command = "npm run build"
