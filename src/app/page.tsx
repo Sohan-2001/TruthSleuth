@@ -108,7 +108,7 @@ export default function TruthSleuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center py-6 sm:py-10 px-4">
+    <div className="min-h-screen bg-background flex flex-col items-center py-6 sm:py-10 px-4 dynamic-hacker-bg">
       <header className="mb-6 sm:mb-10 text-center">
         <div className="flex items-center justify-center mb-3 sm:mb-4">
           <Terminal className="h-10 w-10 sm:h-12 sm:w-12 text-primary mr-2 sm:mr-3" />
@@ -128,11 +128,17 @@ export default function TruthSleuthPage() {
         </CardHeader>
         <CardContent className="p-4 sm:p-6">
           <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'text' | 'image')} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-4 sm:mb-6 bg-muted/30 border border-primary/30 rounded-sm">
-              <TabsTrigger value="text" className="text-sm sm:text-base py-2 sm:py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm">
+            <TabsList className="grid w-full grid-cols-2 mb-4 sm:mb-6 bg-muted/30 border border-accent/30 rounded-sm">
+              <TabsTrigger 
+                value="text" 
+                className="text-sm sm:text-base py-2 sm:py-2.5 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground data-[state=active]:shadow-[0_0_12px_hsla(var(--accent),0.7)] data-[state=active]:font-semibold rounded-sm"
+              >
                 <FileCode2 className="mr-1.5 sm:mr-2 h-4 w-4 sm:h-5 sm:w-5" /> Textual Input
               </TabsTrigger>
-              <TabsTrigger value="image" className="text-sm sm:text-base py-2 sm:py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-sm">
+              <TabsTrigger 
+                value="image" 
+                className="text-sm sm:text-base py-2 sm:py-2.5 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground data-[state=active]:shadow-[0_0_12px_hsla(var(--accent),0.7)] data-[state=active]:font-semibold rounded-sm"
+              >
                 <ScanLine className="mr-1.5 sm:mr-2 h-4 w-4 sm:h-5 sm:w-5" /> Image Scan
               </TabsTrigger>
             </TabsList>
