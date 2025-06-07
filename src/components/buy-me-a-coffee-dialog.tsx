@@ -23,16 +23,16 @@ export function BuyMeACoffeeDialog({ isOpen, onOpenChange }: BuyMeACoffeeDialogP
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md bg-card text-card-foreground border-2 border-primary rounded-lg shadow-xl">
-        <DialogHeader className="pt-4">
+        <DialogHeader className="pt-2">
           <DialogTitle className="text-center text-xl sm:text-2xl font-headline text-primary">Support TruthSleuth!</DialogTitle>
           <DialogDescription className="text-center text-muted-foreground pt-2 text-xs sm:text-sm">
             If you find this tool helpful, consider buying me a coffee. <br />
             Your support is greatly appreciated! 🙏☕️
           </DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col items-center gap-3 py-2 sm:py-3"> {/* Reduced gap and vertical padding */}
+        <div className="flex flex-col items-center gap-2 py-1">
           <div
-            className="relative w-[160px] h-[180px] sm:w-[180px] sm:h-[200px] border-2 border-primary/50 rounded-md overflow-hidden shadow-md bg-muted/20" /* Reduced height and adjusted width */
+            className="relative w-[160px] h-[180px] sm:w-[180px] sm:h-[200px] border-2 border-primary/50 rounded-md overflow-hidden shadow-md bg-muted/20"
             data-ai-hint="payment QR code"
           >
             <Image
@@ -45,7 +45,7 @@ export function BuyMeACoffeeDialog({ isOpen, onOpenChange }: BuyMeACoffeeDialogP
           </div>
           <p className="text-sm sm:text-base text-foreground font-semibold">Scan to buy me a coffee</p>
         </div>
-        <DialogFooter className="sm:justify-center pb-4">
+        <DialogFooter className="sm:justify-center pb-2">
           <DialogClose asChild>
             <Button
               type="button"
