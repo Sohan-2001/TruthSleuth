@@ -32,11 +32,11 @@ export function BuyMeACoffeeDialog({ isOpen, onOpenChange }: BuyMeACoffeeDialogP
         </DialogHeader>
         <div className="flex flex-col items-center gap-2 py-1">
           <div
-            className="relative w-[160px] h-[180px] sm:w-[180px] sm:h-[200px] border-2 border-primary/50 rounded-md overflow-hidden shadow-md bg-muted/20"
+            className="relative w-[150px] h-[150px] border-2 border-primary/50 rounded-md overflow-hidden shadow-md bg-muted/20"
             data-ai-hint="payment QR code"
           >
             <NextImage
-              src="/images/phonepe-qr.png"
+              src="/phonepe-qr.png"
               alt="PhonePe QR Code"
               layout="fill"
               objectFit="contain"
