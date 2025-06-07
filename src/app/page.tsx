@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, type ChangeEvent, type FormEvent, useEffect } from 'react';
-import Image from 'next/image';
+import NextImage from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -115,7 +115,7 @@ export default function TruthSleuthPage() {
   };
 
   if (!pageMounted) {
-    return null; // Or a loading spinner, to prevent hydration mismatch with theme toggle
+    return null; 
   }
 
   return (
@@ -186,7 +186,7 @@ export default function TruthSleuthPage() {
                     <div className="mt-2 sm:mt-3 border border-input rounded-sm p-1.5 sm:p-2 md:p-4 bg-muted/20">
                       <p className="text-[10px] sm:text-xs font-medium mb-1 sm:mb-1.5 text-foreground">Visual Data Preview:</p>
                       <div className="flex justify-center">
-                         <Image src={imageDataUrl} alt="Uploaded preview" width={400} height={300} className="rounded-sm object-contain max-h-[120px] sm:max-h-[160px] md:max-h-[200px] lg:max-h-[300px]" />
+                         <NextImage src={imageDataUrl} alt="Uploaded preview" width={400} height={300} className="rounded-sm object-contain max-h-[120px] sm:max-h-[160px] md:max-h-[200px] lg:max-h-[300px]" />
                       </div>
                     </div>
                   )}

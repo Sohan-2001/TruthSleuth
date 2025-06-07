@@ -1,7 +1,7 @@
 
 "use client"
 
-import Image from "next/image";
+import NextImage from "next/image";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,7 +35,7 @@ export function BuyMeACoffeeDialog({ isOpen, onOpenChange }: BuyMeACoffeeDialogP
             className="relative w-[160px] h-[180px] sm:w-[180px] sm:h-[200px] border-2 border-primary/50 rounded-md overflow-hidden shadow-md bg-muted/20"
             data-ai-hint="payment QR code"
           >
-            <Image
+            <NextImage
               src="/images/phonepe-qr.png"
               alt="PhonePe QR Code"
               layout="fill"
