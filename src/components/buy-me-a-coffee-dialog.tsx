@@ -40,7 +40,7 @@ export function BuyMeACoffeeDialog({ isOpen, onOpenChange }: BuyMeACoffeeDialogP
               alt="PhonePe QR Code"
               layout="fill"
               objectFit="contain"
-              unoptimized  // Add this if you have issues with optimization for local images or prefer raw image
+              unoptimized
             />
           </div>
           <p className="text-sm sm:text-base text-foreground font-semibold">Scan to buy me a coffee</p>
@@ -60,3 +60,4 @@ export function BuyMeACoffeeDialog({ isOpen, onOpenChange }: BuyMeACoffeeDialogP
     </Dialog>
   );
 }
+
