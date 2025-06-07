@@ -13,7 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { analyzeNewsTruthfulness, type AnalyzeNewsTruthfulnessOutput } from '@/ai/flows/analyze-news-truthfulness';
 import { analyzeImageTruthfulness, type AnalyzeImageTruthfulnessOutput } from '@/ai/flows/analyze-image-truthfulness';
 import TruthScoreDisplay from '@/components/truth-score-display';
-import { FileCode2, ScanLine, Loader2, Binary } from 'lucide-react'; // Removed Terminal, using it in Navbar
+import { FileCode2, ScanLine, Loader2, Binary } from 'lucide-react';
 
 export default function TruthSleuthPage() {
   const [activeTab, setActiveTab] = useState<'text' | 'image'>('text');
@@ -120,10 +120,7 @@ export default function TruthSleuthPage() {
   return (
     <div className="container mx-auto flex flex-col items-center py-6 sm:py-10 px-4 dynamic-hacker-bg flex-grow">
       <header className="mb-6 sm:mb-10 text-center">
-        {/* Site title moved to Navbar */}
-        <p className="mt-1 sm:mt-2 text-lg sm:text-xl text-muted-foreground">
-          AI-Powered Disinformation Analysis Matrix
-        </p>
+        {/* Site title and subtitle moved to Navbar */}
       </header>
 
       <div className="w-full max-w-6xl flex flex-col md:flex-row md:gap-6 lg:gap-8">
