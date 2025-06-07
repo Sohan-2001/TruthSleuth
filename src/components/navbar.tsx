@@ -2,8 +2,8 @@
 "use client"
 
 import Link from "next/link"
-import NextImage from "next/image"; 
-import { Coffee, Moon, Settings, Sun } from "lucide-react" 
+import NextImage from "next/image";
+import { Coffee, Moon, Settings, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 import * as React from "react"
 
@@ -30,7 +30,7 @@ export function Navbar() {
   }, []);
 
   if (!mounted) {
-    return null; 
+    return null;
   }
 
   return (
@@ -38,13 +38,13 @@ export function Navbar() {
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-14 max-w-screen-2xl items-center">
           <Link href="/" className="mr-auto flex items-center space-x-2">
-            <NextImage 
-              src="https://placehold.co/32x32.png" 
-              alt="TruthSleuth Logo" 
-              width={32} 
-              height={32} 
-              className="h-6 w-6 sm:h-8 sm:w-8" 
-              data-ai-hint="company logo"
+            <NextImage
+              src="/favicon.ico"
+              alt="TruthSleuth Logo"
+              width={32}
+              height={32}
+              className="h-6 w-6 sm:h-8 sm:w-8"
+              data-ai-hint="favicon"
             />
             <div className="flex flex-col">
               <span className="font-bold text-foreground">
