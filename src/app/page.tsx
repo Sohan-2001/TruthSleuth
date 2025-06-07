@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, type ChangeEvent, type FormEvent, useEffect } from 'react';
+import { useState, type ChangeEvent, type FormEvent, useEffect, useRef } from 'react';
 import NextImage from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,6 +15,7 @@ import { analyzeImageTruthfulness, type AnalyzeImageTruthfulnessOutput } from '@
 import TruthScoreDisplay from '@/components/truth-score-display';
 import { FileCode2, ScanLine, Loader2, Binary } from 'lucide-react';
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function TruthSleuthPage() {
   const [activeTab, setActiveTab] = useState<'text' | 'image'>('text');
@@ -30,9 +31,18 @@ export default function TruthSleuthPage() {
   const { toast } = useToast();
   const [pageMounted, setPageMounted] = useState(false);
 
+  const resultContainerRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
+
   useEffect(() => {
     setPageMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (isMobile && (isLoading || error || analysisResult) && resultContainerRef.current) {
+      resultContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [analysisResult, isLoading, error, isMobile]);
 
 
   const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
@@ -201,7 +211,7 @@ export default function TruthSleuthPage() {
         </Card>
 
         {(isLoading || error || analysisResult) && (
-          <div className="w-full md:w-3/5 lg:w-2/3">
+          <div ref={resultContainerRef} className="w-full md:w-3/5 lg:w-2/3">
             {isLoading && (
               <div className="mt-4 sm:mt-6 md:mt-0 text-center">
                 <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 lg:h-12 lg:w-12 text-primary animate-spin mx-auto" />
@@ -230,3 +240,4 @@ export default function TruthSleuthPage() {
     </div>
   );
 }
+
