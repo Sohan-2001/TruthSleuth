@@ -14,6 +14,7 @@ import { analyzeNewsTruthfulness, type AnalyzeNewsTruthfulnessOutput } from '@/a
 import { analyzeImageTruthfulness, type AnalyzeImageTruthfulnessOutput } from '@/ai/flows/analyze-image-truthfulness';
 import TruthScoreDisplay from '@/components/truth-score-display';
 import { FileCode2, ScanLine, Loader2, Binary } from 'lucide-react';
+import { cn } from "@/lib/utils";
 
 export default function TruthSleuthPage() {
   const [activeTab, setActiveTab] = useState<'text' | 'image'>('text');
@@ -119,12 +120,11 @@ export default function TruthSleuthPage() {
 
   return (
     <div className="container mx-auto flex flex-col items-center py-6 sm:py-10 px-4 dynamic-hacker-bg flex-grow">
-      <header className="mb-6 sm:mb-10 text-center">
-        {/* Site title and subtitle moved to Navbar */}
-      </header>
-
       <div className="w-full max-w-6xl flex flex-col md:flex-row md:gap-6 lg:gap-8">
-        <Card className="w-full md:w-2/5 lg:w-1/3 border-2 border-primary rounded-md overflow-hidden bg-card/80 backdrop-blur-sm mb-6 md:mb-0">
+        <Card className={cn(
+          "border-2 border-primary rounded-md overflow-hidden bg-card/80 backdrop-blur-sm",
+          (analysisResult || isLoading || error) ? "w-full md:w-2/5 lg:w-1/3 mb-6 md:mb-0" : "w-full mb-6"
+        )}>
           <CardHeader className="border-b border-primary/50">
             <CardTitle className="text-xl sm:text-2xl font-headline text-center text-foreground">Engage Analysis Core</CardTitle>
             <CardDescription className="text-center text-muted-foreground pt-1 text-sm sm:text-base">
@@ -200,37 +200,29 @@ export default function TruthSleuthPage() {
           </CardContent>
         </Card>
 
-        <div className="w-full md:w-3/5 lg:w-2/3">
-          {isLoading && (
-            <div className="mt-6 sm:mt-8 md:mt-0 text-center">
-              <Loader2 className="h-10 w-10 sm:h-12 sm:w-12 text-primary animate-spin mx-auto" />
-              <p className="mt-3 sm:mt-4 text-base sm:text-lg text-muted-foreground">ANALYZING DATAPACKET... STANDBY...</p>
-            </div>
-          )}
+        {(isLoading || error || analysisResult) && (
+          <div className="w-full md:w-3/5 lg:w-2/3">
+            {isLoading && (
+              <div className="mt-6 sm:mt-8 md:mt-0 text-center">
+                <Loader2 className="h-10 w-10 sm:h-12 sm:w-12 text-primary animate-spin mx-auto" />
+                <p className="mt-3 sm:mt-4 text-base sm:text-lg text-muted-foreground">ANALYZING DATAPACKET... STANDBY...</p>
+              </div>
+            )}
 
-          {error && !isLoading && (
-             <div className="mt-6 sm:mt-8 md:mt-0 p-3 sm:p-4 bg-destructive/20 border border-destructive rounded-sm text-center">
-                <p className="text-destructive font-medium text-sm sm:text-base">{error}</p>
-             </div>
-          )}
-          
-          {analysisResult && !isLoading && !error && (
-            <TruthScoreDisplay 
-              score={analysisResult.truthfulnessPercentage} 
-              reason={analysisResult.source === 'text' ? analysisResult.reason : undefined} 
-            />
-          )}
-          {!analysisResult && !isLoading && !error && (
-            <Card className="mt-6 sm:mt-8 md:mt-0 w-full border-2 border-primary rounded-md bg-card/80 backdrop-blur-sm min-h-[200px] flex flex-col items-center justify-center">
-                <CardHeader>
-                    <CardTitle className="text-xl sm:text-2xl text-center text-muted-foreground/80">Awaiting Input...</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-center text-muted-foreground">Submit data via the Analysis Core to begin.</p>
-                </CardContent>
-            </Card>
-          )}
-        </div>
+            {error && !isLoading && (
+               <div className="mt-6 sm:mt-8 md:mt-0 p-3 sm:p-4 bg-destructive/20 border border-destructive rounded-sm text-center">
+                  <p className="text-destructive font-medium text-sm sm:text-base">{error}</p>
+               </div>
+            )}
+            
+            {analysisResult && !isLoading && !error && (
+              <TruthScoreDisplay 
+                score={analysisResult.truthfulnessPercentage} 
+                reason={analysisResult.source === 'text' ? analysisResult.reason : undefined} 
+              />
+            )}
+          </div>
+        )}
       </div>
       <footer className="mt-8 sm:mt-12 text-center text-muted-foreground text-xs sm:text-sm">
         <p>&copy; {new Date().getFullYear()} TruthSleuth Systems. // Secure Channel // For Authorized Eyes Only.</p>
@@ -238,3 +230,5 @@ export default function TruthSleuthPage() {
     </div>
   );
 }
+
+    
