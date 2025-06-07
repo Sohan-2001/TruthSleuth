@@ -4,6 +4,7 @@
 import type { FC } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { cn } from "@/lib/utils";
 
 interface TruthScoreDisplayProps {
   score: number;
@@ -26,7 +27,9 @@ const TruthScoreDisplay: FC<TruthScoreDisplayProps> = ({ score, reason }) => {
   }
 
   return (
-    <Card className="mt-4 sm:mt-6 w-full border-2 border-primary rounded-md bg-card/80 backdrop-blur-sm">
+    <Card className={cn(
+        "mt-4 sm:mt-6 md:mt-0 w-full border-2 border-primary rounded-md bg-card/80 backdrop-blur-sm"
+      )}>
       <CardHeader className="p-3 sm:p-4 md:p-6 border-b border-primary/50">
         <CardTitle className="text-base sm:text-lg md:text-xl lg:text-2xl font-headline text-center text-foreground">Veracity Assessment Protocol</CardTitle>
       </CardHeader>
