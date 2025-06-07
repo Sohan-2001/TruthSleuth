@@ -31,11 +31,11 @@ const TruthScoreDisplay: FC<TruthScoreDisplayProps> = ({ score, reason }) => {
         "mt-4 sm:mt-6 md:mt-0 w-full border-2 border-primary rounded-md bg-card/80 backdrop-blur-sm"
       )}>
       <CardHeader className="p-3 sm:p-4 md:p-6 border-b border-primary/50">
-        <CardTitle className="text-base sm:text-lg md:text-xl lg:text-2xl font-headline text-center text-foreground">Veracity Assessment Protocol</CardTitle>
+        <CardTitle className="text-base sm:text-lg md:text-xl lg:text-2xl font-headline text-center text-foreground">Result</CardTitle>
       </CardHeader>
       <CardContent className="text-center p-3 sm:p-4 md:p-6 pt-2 sm:pt-3 md:pt-4">
         <div className="mb-3 sm:mb-4 md:mb-6">
-          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground mb-1">Confidence Index:</p>
+          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground mb-1">Correctness Percentage:</p>
           <p className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold my-1 sm:my-2 ${scoreTextColorClass}`}>
             {score}<span className="text-lg sm:text-xl md:text-2xl lg:text-3xl">%</span>
           </p>
@@ -43,7 +43,7 @@ const TruthScoreDisplay: FC<TruthScoreDisplayProps> = ({ score, reason }) => {
         <Progress value={score} className={`w-full h-2.5 sm:h-3 md:h-4 mb-3 sm:mb-4 md:mb-6 rounded-sm bg-muted/50 border border-input [&>div]:${progressIndicatorClass}`} />
         {reason && (
           <div className="mt-3 sm:mt-4 md:mt-6 pt-3 sm:pt-4 md:pt-6 border-t border-border/50">
-            <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold mb-1 sm:mb-1.5 md:mb-2 text-left text-foreground">Threat Analysis Log:</h3>
+            <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold mb-1 sm:mb-1.5 md:mb-2 text-left text-foreground">Explanation:</h3>
             <p className="text-xs sm:text-sm md:text-base text-muted-foreground text-left whitespace-pre-wrap bg-muted/20 p-2 sm:p-3 rounded-sm border border-input">{reason}</p>
           </div>
         )}
@@ -53,3 +53,4 @@ const TruthScoreDisplay: FC<TruthScoreDisplayProps> = ({ score, reason }) => {
 };
 
 export default TruthScoreDisplay;
+
