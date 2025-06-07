@@ -15,9 +15,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
 import { BuyMeACoffeeDialog } from "./buy-me-a-coffee-dialog"
 
 export function Navbar() {
@@ -30,7 +30,7 @@ export function Navbar() {
   }, []);
 
   if (!mounted) {
-    return null;
+    return null; 
   }
 
   return (
@@ -63,22 +63,18 @@ export function Navbar() {
                   <span className="sr-only">Open settings</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 bg-popover border-primary/50">
+              <DropdownMenuContent align="end" className="w-64 bg-popover border-primary/50">
                 <DropdownMenuLabel className="text-muted-foreground">Appearance</DropdownMenuLabel>
-                <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="focus:bg-accent/50">
-                  <div className="flex items-center justify-between w-full cursor-pointer">
-                     <Label htmlFor="theme-toggle-dropdown" className="flex items-center cursor-pointer text-popover-foreground">
-                        {theme === 'dark' ? <Moon className="mr-2 h-4 w-4 text-primary" /> : <Sun className="mr-2 h-4 w-4 text-primary" />}
-                        Toggle Theme
-                     </Label>
-                     <Switch
-                        id="theme-toggle-dropdown"
-                        checked={theme === 'dark'}
-                        onCheckedChange={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                        className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-input"
-                     />
-                  </div>
-                </DropdownMenuItem>
+                <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
+                  <DropdownMenuRadioItem value="light" className="cursor-pointer focus:bg-accent/50 text-popover-foreground">
+                    <Sun className="mr-2 h-4 w-4 text-primary" />
+                    <span>Normal Theme</span>
+                  </DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="dark" className="cursor-pointer focus:bg-accent/50 text-popover-foreground">
+                    <Moon className="mr-2 h-4 w-4 text-primary" />
+                    <span>Hacker Theme</span>
+                  </DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
                 <DropdownMenuSeparator className="bg-border/50" />
                 <DropdownMenuItem onSelect={() => setIsCoffeeModalOpen(true)} className="cursor-pointer focus:bg-accent/50 text-popover-foreground">
                   <Coffee className="mr-2 h-4 w-4 text-primary" />
