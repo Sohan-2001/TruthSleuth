@@ -30,13 +30,13 @@ export function BuyMeACoffeeDialog({ isOpen, onOpenChange }: BuyMeACoffeeDialogP
             Your support is greatly appreciated! 🙏☕️
           </DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col items-center gap-4 py-3 sm:py-4">
-          <div 
-            className="relative w-[170px] h-[280px] sm:w-[210px] sm:h-[350px] border-2 border-primary/50 rounded-md overflow-hidden shadow-md bg-muted/20"
+        <div className="flex flex-col items-center gap-3 py-2 sm:py-3"> {/* Reduced gap and vertical padding */}
+          <div
+            className="relative w-[160px] h-[180px] sm:w-[180px] sm:h-[200px] border-2 border-primary/50 rounded-md overflow-hidden shadow-md bg-muted/20" /* Reduced height and adjusted width */
             data-ai-hint="payment QR code"
           >
             <Image
-              src="/images/phonepe-qr.png" 
+              src="/images/phonepe-qr.png"
               alt="PhonePe QR Code"
               layout="fill"
               objectFit="contain"
@@ -47,9 +47,9 @@ export function BuyMeACoffeeDialog({ isOpen, onOpenChange }: BuyMeACoffeeDialogP
         </div>
         <DialogFooter className="sm:justify-center pb-4">
           <DialogClose asChild>
-            <Button 
-              type="button" 
-              variant="outline" 
+            <Button
+              type="button"
+              variant="outline"
               className="border-primary text-primary hover:bg-primary/10 hover:text-primary focus-visible:ring-primary"
             >
               <X className="mr-2 h-4 w-4" /> Close
@@ -60,4 +60,3 @@ export function BuyMeACoffeeDialog({ isOpen, onOpenChange }: BuyMeACoffeeDialogP
     </Dialog>
   );
 }
-
