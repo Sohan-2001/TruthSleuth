@@ -7,6 +7,7 @@ import { Navbar } from "@/components/navbar";
 export const metadata: Metadata = {
   title: 'TruthSleuth - Verified News',
   description: 'Your AI-Powered Fake News Detector',
+  icons: '/image-removebg-preview.ico',
 };
 
 export default function RootLayout({
