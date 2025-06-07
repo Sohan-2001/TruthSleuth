@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, type ChangeEvent, type FormEvent } from 'react';
+import { useState, type ChangeEvent, type FormEvent, useEffect } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,7 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { analyzeNewsTruthfulness, type AnalyzeNewsTruthfulnessOutput } from '@/ai/flows/analyze-news-truthfulness';
 import { analyzeImageTruthfulness, type AnalyzeImageTruthfulnessOutput } from '@/ai/flows/analyze-image-truthfulness';
 import TruthScoreDisplay from '@/components/truth-score-display';
-import { FileCode2, ScanLine, Loader2, Binary, Terminal } from 'lucide-react';
+import { FileCode2, ScanLine, Loader2, Binary } from 'lucide-react'; // Removed Terminal, using it in Navbar
 
 export default function TruthSleuthPage() {
   const [activeTab, setActiveTab] = useState<'text' | 'image'>('text');
@@ -27,6 +27,12 @@ export default function TruthSleuthPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const [pageMounted, setPageMounted] = useState(false);
+
+  useEffect(() => {
+    setPageMounted(true);
+  }, []);
+
 
   const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -107,13 +113,14 @@ export default function TruthSleuthPage() {
     }
   };
 
+  if (!pageMounted) {
+    return null; // Or a loading spinner, to prevent hydration mismatch with theme toggle
+  }
+
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center py-6 sm:py-10 px-4 dynamic-hacker-bg">
+    <div className="container mx-auto flex flex-col items-center py-6 sm:py-10 px-4 dynamic-hacker-bg flex-grow">
       <header className="mb-6 sm:mb-10 text-center">
-        <div className="flex items-center justify-center mb-3 sm:mb-4">
-          <Terminal className="h-10 w-10 sm:h-12 sm:w-12 text-primary mr-2 sm:mr-3" />
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-headline font-bold text-foreground">TruthSleuth</h1>
-        </div>
+        {/* Site title moved to Navbar */}
         <p className="mt-1 sm:mt-2 text-lg sm:text-xl text-muted-foreground">
           AI-Powered Disinformation Analysis Matrix
         </p>
@@ -215,6 +222,16 @@ export default function TruthSleuthPage() {
               score={analysisResult.truthfulnessPercentage} 
               reason={analysisResult.source === 'text' ? analysisResult.reason : undefined} 
             />
+          )}
+          {!analysisResult && !isLoading && !error && (
+            <Card className="mt-6 sm:mt-8 md:mt-0 w-full border-2 border-primary rounded-md bg-card/80 backdrop-blur-sm min-h-[200px] flex flex-col items-center justify-center">
+                <CardHeader>
+                    <CardTitle className="text-xl sm:text-2xl text-center text-muted-foreground/80">Awaiting Input...</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-center text-muted-foreground">Submit data via the Analysis Core to begin.</p>
+                </CardContent>
+            </Card>
           )}
         </div>
       </div>
