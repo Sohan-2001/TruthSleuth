@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -10,9 +11,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Source Code Pro', 'monospace'],
-        headline: ['Source Code Pro', 'monospace'],
-        code: ['Source Code Pro', 'monospace'],
+        body: ['var(--font-body-family)', 'system-ui', '-apple-system', 'BlinkMacSystemFont', "'Segoe UI'", 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', "'Open Sans'", "'Helvetica Neue'", 'sans-serif'],
+        headline: ['var(--font-headline-family)', 'system-ui', '-apple-system', 'BlinkMacSystemFont', "'Segoe UI'", 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', "'Open Sans'", "'Helvetica Neue'", 'sans-serif'],
+        code: ["'Source Code Pro'", 'monospace'],
       },
       colors: {
         background: 'hsl(var(--background))',
@@ -74,10 +75,10 @@ export default {
           ring: 'hsl(var(--sidebar-ring))',
         },
       },
-      borderRadius: {
+      borderRadius: { // These will now use the theme-dependent --radius
         lg: 'var(--radius)',
-        md: 'calc(var(--radius) + 2px)', // slight adjustment if needed, matching radius
-        sm: 'var(--radius)', // matching radius
+        md: 'calc(var(--radius) + 2px)',
+        sm: 'var(--radius)',
       },
       keyframes: {
         'accordion-down': {
