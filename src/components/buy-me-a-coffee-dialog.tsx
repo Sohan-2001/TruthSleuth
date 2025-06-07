@@ -30,9 +30,9 @@ export function BuyMeACoffeeDialog({ isOpen, onOpenChange }: BuyMeACoffeeDialogP
             Your support is greatly appreciated! 🙏☕️
           </DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col items-center gap-4 py-4 sm:py-6">
+        <div className="flex flex-col items-center gap-4 py-3 sm:py-4">
           <div 
-            className="relative w-[200px] h-[334px] sm:w-[250px] sm:h-[418px] border-2 border-primary/50 rounded-md overflow-hidden shadow-md bg-muted/20"
+            className="relative w-[170px] h-[280px] sm:w-[210px] sm:h-[350px] border-2 border-primary/50 rounded-md overflow-hidden shadow-md bg-muted/20"
             data-ai-hint="payment QR code"
           >
             <Image
