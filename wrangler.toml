@@ -1,6 +1,6 @@
 
-# Replace "your-app-name" with the actual name of your Cloudflare Worker or Pages project.
-name = "your-app-name"
+# Replace "TruthSleuth" with the actual name of your Cloudflare Worker or Pages project if different.
+name = "TruthSleuth"
 
 # Set the compatibility date to a recent date.
 # This ensures your worker uses a specific version of the Workers runtime.
