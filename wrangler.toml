@@ -1,3 +1,4 @@
+
 # Replace "your-app-name" with the actual name of your Cloudflare Worker or Pages project.
 name = "your-app-name"
 
@@ -11,22 +12,17 @@ compatibility_date = "2025-06-07" # You can update this to the current date or a
 # Example: main = ".vercel/output/functions/__next_launcher.func/index.js"
 # main = "src/index.ts"
 
-# The `wrangler deploy` command, as per your error log, requires an assets directory.
-# The error message suggested "./dist" as an example.
-# If your Next.js build process (e.g., `next build && next export -o dist`) outputs to "./dist",
-# then this path is correct.
-# If your static build output is in a different directory (e.g., "out/" from `next export`, or you only want to serve "public/"),
-# you should change the path below.
-# For a standard `next build` (App Router without export), deploying static assets this way for a full app
-# might require a more complex setup or using Cloudflare Pages, which typically expects ".next".
+# The `wrangler deploy` command requires an assets directory.
+# With `output: 'export'` in next.config.ts, Next.js will build static assets to the "out/" directory by default.
+# Ensure your Cloudflare build command runs `npm run build` (which executes `next build`).
 [assets]
-directory = "./dist"
+directory = "./out" # Changed from "./dist" to "./out"
 # include = ["**/*"] # Optional: By default, all files in the directory are included.
 # exclude = []      # Optional: Specify files or patterns to exclude.
 
 # If you are using Cloudflare Pages and not `wrangler deploy` directly for a worker with assets,
 # your wrangler.toml might look different or these settings might be in the Cloudflare dashboard.
-# For example, for Pages:
-# pages_build_output_dir = ".next"
+# For example, for Pages, you might use:
+# pages_build_output_dir = "out"
 # [build]
 # command = "npm run build"
