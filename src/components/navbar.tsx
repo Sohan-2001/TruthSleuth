@@ -45,7 +45,7 @@ export function Navbar() {
             </div>
           </Link>
           <div className="flex items-center space-x-2">
-            <div className="w-[40px] h-[40px]"></div> {/* Placeholder for dropdown trigger */}
+            <div className="h-8 w-8"></div> {/* Adjusted placeholder size */}
           </div>
         </div>
       </header>
