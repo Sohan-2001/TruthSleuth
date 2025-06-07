@@ -126,8 +126,8 @@ export default function TruthSleuthPage() {
           (analysisResult || isLoading || error) ? "w-full md:w-2/5 lg:w-1/3 mb-6 md:mb-0" : "w-full mb-6"
         )}>
           <CardHeader className="border-b border-primary/50">
-            <CardTitle className="text-xl sm:text-2xl font-headline text-center text-foreground">Engage Analysis Core</CardTitle>
-            <CardDescription className="text-center text-muted-foreground pt-1 text-sm sm:text-base">
+            <CardTitle className="text-xl sm:text-2xl font-headline text-foreground">Engage Analysis Core</CardTitle>
+            <CardDescription className="text-muted-foreground pt-1 text-sm sm:text-base">
               Submit text-based intel or visual data for veracity assessment.
             </CardDescription>
           </CardHeader>
