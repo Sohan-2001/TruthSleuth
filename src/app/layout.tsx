@@ -5,8 +5,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Navbar } from "@/components/navbar";
 
 export const metadata: Metadata = {
-  title: 'TruthSleuth',
-  description: 'AI-Powered Fake News Detector',
+  title: 'TruthSleuth - Verified News',
+  description: 'Your AI-Powered Fake News Detector',
 };
 
 export default function RootLayout({
