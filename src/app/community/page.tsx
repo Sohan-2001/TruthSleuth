@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo } from 'react';
@@ -9,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { PlusCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { SubmitNewsDialog } from '@/components/submit-news-dialog';
 
 export type HydratedSubmission = Omit<NewsSubmissionType, 'submittedBy' | 'evidence'> & {
   submittedBy: User | undefined;
@@ -20,6 +22,7 @@ export default function CommunityPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [submissions, setSubmissions] = useState<NewsSubmissionType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitDialogOpen, setIsSubmitDialogOpen] = useState(false);
 
   useEffect(() => {
     const usersRef = ref(db, 'users');
@@ -50,7 +53,6 @@ export default function CommunityPage() {
       const submissionList: NewsSubmissionType[] = data ? Object.values(data).map((sub: any) => ({
         ...sub,
         evidence: sub.evidence ? Object.values(sub.evidence) : [],
-        submittedAt: new Date(sub.submittedAt)
       })) : [];
       setSubmissions(submissionList);
       submissionsLoaded = true;
@@ -68,7 +70,7 @@ export default function CommunityPage() {
   }, []);
 
   const hydratedSubmissions: HydratedSubmission[] = useMemo(() => {
-    if (!users.length || !submissions.length) return [];
+    if (!users.length && (!submissions || submissions.length === 0)) return [];
 
     const usersMap = new Map(users.map(u => [u.id, u]));
 
@@ -85,7 +87,7 @@ export default function CommunityPage() {
           evidence: hydratedEvidence
         };
       })
-      .sort((a, b) => b.submittedAt.getTime() - a.submittedAt.getTime());
+      .sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());
 
   }, [users, submissions]);
 
@@ -98,43 +100,46 @@ export default function CommunityPage() {
   }
 
   return (
-    <div className="container mx-auto py-10 px-4">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-4xl font-bold font-headline">Community Verification</h1>
-          <p className="text-muted-foreground mt-2">Help verify news submitted by the community. Upvote facts, downvote fiction.</p>
-        </div>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="inline-block"> {/* Wrapper for Tooltip with disabled button */}
-                <Button disabled={!user}>
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  Submit News
-                </Button>
-              </div>
-            </TooltipTrigger>
-            {!user && (
-              <TooltipContent>
-                <p>You must be logged in to submit news.</p>
-              </TooltipContent>
-            )}
-          </Tooltip>
-        </TooltipProvider>
-      </div>
-
-      <div className="space-y-6">
-        {hydratedSubmissions.length > 0 ? (
-          hydratedSubmissions.map(submission => (
-            <NewsSubmissionCard key={submission.id} submission={submission} />
-          ))
-        ) : (
-          <div className="text-center py-10 text-muted-foreground bg-muted/20 rounded-lg">
-            <p className="font-semibold">No community submissions yet.</p>
-            <p className="text-sm mt-1">Be the first to submit a story for verification!</p>
+    <>
+      <div className="container mx-auto py-10 px-4">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-4xl font-bold font-headline">Community Verification</h1>
+            <p className="text-muted-foreground mt-2">Help verify news submitted by the community. Upvote facts, downvote fiction.</p>
           </div>
-        )}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="inline-block">
+                  <Button disabled={!user} onClick={() => user && setIsSubmitDialogOpen(true)}>
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Submit News
+                  </Button>
+                </div>
+              </TooltipTrigger>
+              {!user && (
+                <TooltipContent>
+                  <p>You must be logged in to submit news.</p>
+                </TooltipContent>
+              )}
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+
+        <div className="space-y-6">
+          {hydratedSubmissions.length > 0 ? (
+            hydratedSubmissions.map(submission => (
+              <NewsSubmissionCard key={submission.id} submission={submission} />
+            ))
+          ) : (
+            <div className="text-center py-10 text-muted-foreground bg-muted/20 rounded-lg">
+              <p className="font-semibold">No community submissions yet.</p>
+              <p className="text-sm mt-1">Be the first to submit a story for verification!</p>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+      <SubmitNewsDialog isOpen={isSubmitDialogOpen} onOpenChange={setIsSubmitDialogOpen} />
+    </>
   );
 }

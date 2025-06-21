@@ -12,7 +12,7 @@ export interface Evidence {
   userId: string;
   text: string;
   link?: string;
-  submittedAt: Date;
+  submittedAt: string;
 }
 
 export interface NewsSubmission {
@@ -20,7 +20,7 @@ export interface NewsSubmission {
   title: string;
   content: string;
   submittedBy: string; // userId
-  submittedAt: Date;
+  submittedAt: string;
   aiScore: number;
   upvotes: number;
   downvotes: number;
