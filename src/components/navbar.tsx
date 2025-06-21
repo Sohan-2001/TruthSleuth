@@ -37,7 +37,7 @@ export function Navbar() {
     <>
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-14 max-w-screen-2xl items-center">
-          <Link href="/" className="mr-auto flex items-center space-x-2">
+          <Link href="/" className="mr-6 flex items-center space-x-2">
             <NextImage
               src="/favicon.ico"
               alt="TruthSleuth Logo"
@@ -55,7 +55,21 @@ export function Navbar() {
               </span>
             </div>
           </Link>
-          <div className="flex items-center space-x-2">
+          <nav className="hidden items-center space-x-6 text-sm font-medium md:flex">
+             <Link
+              href="/community"
+              className="transition-colors hover:text-foreground/80 text-foreground/60"
+            >
+              Community
+            </Link>
+            <Link
+              href="/leaderboard"
+              className="transition-colors hover:text-foreground/80 text-foreground/60"
+            >
+              Leaderboard
+            </Link>
+          </nav>
+          <div className="flex flex-1 items-center justify-end space-x-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8 text-foreground hover:text-primary">
