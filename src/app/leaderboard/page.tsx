@@ -15,8 +15,24 @@ export default function LeaderboardPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Attempt to load from cache first
+    try {
+      const cachedUsers = localStorage.getItem('leaderboard_users');
+      const cacheTimestamp = localStorage.getItem('leaderboard_cache_timestamp');
+      
+      if (cachedUsers && cacheTimestamp) {
+        const isCacheFresh = new Date().getTime() - Number(cacheTimestamp) < 5 * 60 * 1000; // 5 minutes
+        if (isCacheFresh) {
+          setUsers(JSON.parse(cachedUsers));
+          setIsLoading(false);
+        }
+      }
+    } catch (error) {
+      console.error("Error reading from localStorage", error);
+    }
+    
+    // Set up Firebase listener
     const usersRef = ref(db, 'users');
-    // Query for the top 50 users by points.
     const usersQuery = query(usersRef, orderByChild('points'), limitToLast(50));
 
     const unsubscribe = onValue(usersQuery, (snapshot) => {
@@ -25,8 +41,15 @@ export default function LeaderboardPage() {
         snapshot.forEach((childSnapshot) => {
           usersData.push(childSnapshot.val());
         });
-        // Reverse the array to sort from highest to lowest points
-        setUsers(usersData.reverse());
+        const sortedUsers = usersData.reverse();
+        setUsers(sortedUsers);
+        
+        try {
+          localStorage.setItem('leaderboard_users', JSON.stringify(sortedUsers));
+          localStorage.setItem('leaderboard_cache_timestamp', new Date().getTime().toString());
+        } catch (error) {
+          console.error("Error writing to localStorage", error);
+        }
       } else {
         setUsers([]);
       }
