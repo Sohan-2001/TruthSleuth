@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { db } from '@/lib/firebase';
-import { ref, onValue } from 'firebase/database';
+import { ref, onValue, query, orderByChild, limitToLast } from 'firebase/database';
 import type { User, NewsSubmission as NewsSubmissionType, Evidence } from '@/lib/types';
 import { NewsSubmissionCard } from '@/components/news-submission-card';
 import { Button } from '@/components/ui/button';
@@ -27,6 +27,7 @@ export default function CommunityPage() {
   useEffect(() => {
     const usersRef = ref(db, 'users');
     const submissionsRef = ref(db, 'submissions');
+    const recentSubmissionsQuery = query(submissionsRef, orderByChild('submittedAt'), limitToLast(20));
     
     let usersLoaded = false;
     let submissionsLoaded = false;
@@ -48,12 +49,15 @@ export default function CommunityPage() {
       checkLoading();
     });
 
-    const submissionsUnsubscribe = onValue(submissionsRef, (snapshot) => {
-      const data = snapshot.val();
-      const submissionList: NewsSubmissionType[] = data ? Object.values(data).map((sub: any) => ({
-        ...sub,
-        evidence: sub.evidence ? Object.values(sub.evidence) : [],
-      })) : [];
+    const submissionsUnsubscribe = onValue(recentSubmissionsQuery, (snapshot) => {
+      const submissionList: NewsSubmissionType[] = [];
+      snapshot.forEach(childSnapshot => {
+        const sub = childSnapshot.val();
+        submissionList.push({
+          ...sub,
+          evidence: sub.evidence ? Object.values(sub.evidence) : [],
+        });
+      });
       setSubmissions(submissionList);
       submissionsLoaded = true;
       checkLoading();

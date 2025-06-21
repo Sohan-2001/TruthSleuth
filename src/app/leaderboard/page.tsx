@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
-import { ref, onValue } from 'firebase/database';
+import { ref, onValue, query, orderByChild, limitToLast } from 'firebase/database';
 import type { User } from '@/lib/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -16,12 +16,17 @@ export default function LeaderboardPage() {
 
   useEffect(() => {
     const usersRef = ref(db, 'users');
-    const unsubscribe = onValue(usersRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const userList: User[] = Object.values(data);
-        const sortedUsers = userList.sort((a, b) => b.points - a.points);
-        setUsers(sortedUsers);
+    // Query for the top 50 users by points.
+    const usersQuery = query(usersRef, orderByChild('points'), limitToLast(50));
+
+    const unsubscribe = onValue(usersQuery, (snapshot) => {
+      const usersData: User[] = [];
+      if (snapshot.exists()) {
+        snapshot.forEach((childSnapshot) => {
+          usersData.push(childSnapshot.val());
+        });
+        // Reverse the array to sort from highest to lowest points
+        setUsers(usersData.reverse());
       } else {
         setUsers([]);
       }
