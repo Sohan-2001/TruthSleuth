@@ -3,7 +3,7 @@
 
 import Link from "next/link"
 import NextImage from "next/image";
-import { Coffee, Moon, Settings, Sun } from "lucide-react"
+import { Coffee, Menu, Moon, Settings, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 import * as React from "react"
 
@@ -18,12 +18,15 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu"
+import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { BuyMeACoffeeDialog } from "./buy-me-a-coffee-dialog"
 
 export function Navbar() {
   const { theme, setTheme } = useTheme();
   const [isCoffeeModalOpen, setIsCoffeeModalOpen] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+
 
   React.useEffect(() => {
     setMounted(true);
@@ -96,6 +99,42 @@ export function Navbar() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+
+            <div className="md:hidden">
+                <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+                    <SheetTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-foreground hover:text-primary">
+                            <Menu className="h-5 w-5" />
+                            <span className="sr-only">Open Menu</span>
+                        </Button>
+                    </SheetTrigger>
+                    <SheetContent side="right" className="w-[240px] sm:w-[300px]">
+                        <Link href="/" className="flex items-center space-x-2 mb-8">
+                            <NextImage
+                                src="/favicon.ico"
+                                alt="TruthSleuth Logo"
+                                width={32}
+                                height={32}
+                                className="h-8 w-8"
+                                data-ai-hint="favicon"
+                            />
+                            <span className="font-bold text-foreground">TruthSleuth</span>
+                        </Link>
+                        <div className="flex flex-col space-y-3">
+                            <SheetClose asChild>
+                                <Link href="/community" className="transition-colors hover:text-foreground/80 text-foreground text-lg">
+                                Community
+                                </Link>
+                            </SheetClose>
+                            <SheetClose asChild>
+                                <Link href="/leaderboard" className="transition-colors hover:text-foreground/80 text-foreground text-lg">
+                                Leaderboard
+                                </Link>
+                            </SheetClose>
+                        </div>
+                    </SheetContent>
+                </Sheet>
+            </div>
           </div>
         </div>
       </header>
