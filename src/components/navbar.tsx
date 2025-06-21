@@ -18,7 +18,7 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu"
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { BuyMeACoffeeDialog } from "./buy-me-a-coffee-dialog"
 
 export function Navbar() {
@@ -109,6 +109,8 @@ export function Navbar() {
                         </Button>
                     </SheetTrigger>
                     <SheetContent side="right" className="w-[240px] sm:w-[300px]">
+                        <SheetTitle className="sr-only">Menu</SheetTitle>
+                        <SheetDescription className="sr-only">A list of navigation links for the site.</SheetDescription>
                         <Link href="/" className="flex items-center space-x-2 mb-8">
                             <NextImage
                                 src="/favicon.ico"
