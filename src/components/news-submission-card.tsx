@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from 'react';
-import type { NewsSubmission, User } from '@/lib/types';
+import type { NewsSubmission, User, Evidence } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -14,12 +14,13 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Separator } from './ui/separator';
 import { Input } from '@/components/ui/input';
-import { mockUsers } from '@/lib/mock-data';
+
+type HydratedEvidence = Omit<Evidence, 'userId'> & { user: User | undefined };
 
 interface NewsSubmissionCardProps {
-  submission: Omit<NewsSubmission, 'submittedBy' | 'evidence'> & { 
-    submittedBy: User | undefined,
-    evidence: (Omit<NewsSubmission['evidence'][0], 'userId'> & { userId: User | undefined })[]
+  submission: Omit<NewsSubmission, 'submittedBy' | 'evidence'> & {
+    submittedBy: User | undefined;
+    evidence: HydratedEvidence[];
   };
 }
 
@@ -82,7 +83,7 @@ export function NewsSubmissionCard({ submission }: NewsSubmissionCardProps) {
             <div className="space-y-4 pt-2">
               {evidence.map(e => (
                 <div key={e.id} className="text-xs p-3 bg-muted/50 rounded-md">
-                  <p className="font-semibold">{mockUsers.find(u => u.id === e.userId)?.name}</p>
+                  <p className="font-semibold">{e.user?.name ?? 'Anonymous'}</p>
                   <p className="text-muted-foreground mt-1">{e.text}</p>
                   {e.link && (
                     <Link href={e.link} target="_blank" className="text-primary hover:underline flex items-center gap-1 mt-1">

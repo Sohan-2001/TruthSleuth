@@ -1,14 +1,99 @@
+"use client";
 
+import { useState, useEffect, useMemo } from 'react';
+import { db } from '@/lib/firebase';
+import { ref, onValue } from 'firebase/database';
+import type { User, NewsSubmission as NewsSubmissionType, Evidence } from '@/lib/types';
 import { NewsSubmissionCard } from '@/components/news-submission-card';
-import { mockSubmissions, mockUsers } from '@/lib/mock-data';
 import { Button } from '@/components/ui/button';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, Loader2 } from 'lucide-react';
+
+// This is the hydrated type we'll pass to the card component
+export type HydratedSubmission = Omit<NewsSubmissionType, 'submittedBy' | 'evidence'> & {
+  submittedBy: User | undefined;
+  evidence: (Omit<Evidence, 'userId'> & { user: User | undefined })[];
+};
 
 export default function CommunityPage() {
-  const submissionsWithUsers = mockSubmissions.map(submission => {
-    const user = mockUsers.find(u => u.id === submission.submittedBy);
-    return { ...submission, submittedBy: user };
-  }).sort((a, b) => b.submittedAt.getTime() - a.submittedAt.getTime());
+  const [users, setUsers] = useState<User[]>([]);
+  const [submissions, setSubmissions] = useState<NewsSubmissionType[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const usersRef = ref(db, 'users');
+    const submissionsRef = ref(db, 'submissions');
+    
+    let usersLoaded = false;
+    let submissionsLoaded = false;
+
+    const checkLoading = () => {
+      if (usersLoaded && submissionsLoaded) {
+        setIsLoading(false);
+      }
+    };
+
+    const usersUnsubscribe = onValue(usersRef, (snapshot) => {
+      const data = snapshot.val();
+      setUsers(data ? Object.values(data) : []);
+      usersLoaded = true;
+      checkLoading();
+    }, (error) => {
+      console.error("Firebase users read failed:", error);
+      usersLoaded = true;
+      checkLoading();
+    });
+
+    const submissionsUnsubscribe = onValue(submissionsRef, (snapshot) => {
+      const data = snapshot.val();
+      const submissionList: NewsSubmissionType[] = data ? Object.values(data).map((sub: any) => ({
+        ...sub,
+        evidence: sub.evidence ? Object.values(sub.evidence) : [],
+        submittedAt: new Date(sub.submittedAt)
+      })) : [];
+      setSubmissions(submissionList);
+      submissionsLoaded = true;
+      checkLoading();
+    }, (error) => {
+      console.error("Firebase submissions read failed:", error);
+      submissionsLoaded = true;
+      checkLoading();
+    });
+
+    return () => {
+      usersUnsubscribe();
+      submissionsUnsubscribe();
+    };
+  }, []);
+
+  const hydratedSubmissions: HydratedSubmission[] = useMemo(() => {
+    if (!users.length || !submissions.length) return [];
+
+    const usersMap = new Map(users.map(u => [u.id, u]));
+
+    return submissions
+      .map(submission => {
+        const hydratedEvidence = (submission.evidence || []).map(e => ({
+          ...e,
+          user: usersMap.get(e.userId)
+        }));
+        
+        return {
+          ...submission,
+          submittedBy: usersMap.get(submission.submittedBy),
+          evidence: hydratedEvidence
+        };
+      })
+      .sort((a, b) => b.submittedAt.getTime() - a.submittedAt.getTime());
+
+  }, [users, submissions]);
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto py-10 px-4 flex justify-center items-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-10 px-4">
@@ -24,9 +109,16 @@ export default function CommunityPage() {
       </div>
 
       <div className="space-y-6">
-        {submissionsWithUsers.map(submission => (
-          <NewsSubmissionCard key={submission.id} submission={submission} />
-        ))}
+        {hydratedSubmissions.length > 0 ? (
+          hydratedSubmissions.map(submission => (
+            <NewsSubmissionCard key={submission.id} submission={submission} />
+          ))
+        ) : (
+          <div className="text-center py-10 text-muted-foreground bg-muted/20 rounded-lg">
+            <p className="font-semibold">No community submissions yet.</p>
+            <p className="text-sm mt-1">Be the first to submit a story for verification!</p>
+          </div>
+        )}
       </div>
     </div>
   );
