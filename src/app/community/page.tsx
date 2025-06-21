@@ -7,14 +7,16 @@ import type { User, NewsSubmission as NewsSubmissionType, Evidence } from '@/lib
 import { NewsSubmissionCard } from '@/components/news-submission-card';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, Loader2 } from 'lucide-react';
+import { useAuth } from '@/context/auth-context';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
-// This is the hydrated type we'll pass to the card component
 export type HydratedSubmission = Omit<NewsSubmissionType, 'submittedBy' | 'evidence'> & {
   submittedBy: User | undefined;
   evidence: (Omit<Evidence, 'userId'> & { user: User | undefined })[];
 };
 
 export default function CommunityPage() {
+  const { user } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [submissions, setSubmissions] = useState<NewsSubmissionType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -102,10 +104,23 @@ export default function CommunityPage() {
           <h1 className="text-4xl font-bold font-headline">Community Verification</h1>
           <p className="text-muted-foreground mt-2">Help verify news submitted by the community. Upvote facts, downvote fiction.</p>
         </div>
-        <Button>
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Submit News
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="inline-block"> {/* Wrapper for Tooltip with disabled button */}
+                <Button disabled={!user}>
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Submit News
+                </Button>
+              </div>
+            </TooltipTrigger>
+            {!user && (
+              <TooltipContent>
+                <p>You must be logged in to submit news.</p>
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </TooltipProvider>
       </div>
 
       <div className="space-y-6">

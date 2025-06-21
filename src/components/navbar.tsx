@@ -3,7 +3,7 @@
 
 import Link from "next/link"
 import NextImage from "next/image";
-import { Coffee, Menu, Moon, Settings, Sun } from "lucide-react"
+import { Coffee, Menu, Moon, Settings, Sun, LogOut, UserPlus, LogIn, UserCircle } from "lucide-react"
 import { useTheme } from "next-themes"
 import * as React from "react"
 
@@ -18,14 +18,18 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu"
-import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetTitle, SheetDescription, SheetFooter } from "@/components/ui/sheet";
 import { BuyMeACoffeeDialog } from "./buy-me-a-coffee-dialog"
+import { useAuth } from "@/context/auth-context";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Separator } from "./ui/separator";
 
 export function Navbar() {
   const { theme, setTheme } = useTheme();
   const [isCoffeeModalOpen, setIsCoffeeModalOpen] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const { user, signOut } = useAuth();
 
 
   React.useEffect(() => {
@@ -73,6 +77,43 @@ export function Navbar() {
             </Link>
           </nav>
           <div className="flex flex-1 items-center justify-end space-x-2">
+             {user ? (
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                            <Avatar className="h-8 w-8">
+                                <AvatarImage src={user.avatarUrl || ''} alt={user.name} />
+                                <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56 bg-popover border-primary/50">
+                        <DropdownMenuLabel className="font-normal">
+                            <div className="flex flex-col space-y-1">
+                                <p className="text-sm font-medium leading-none">{user.name}</p>
+                                <p className="text-xs leading-none text-muted-foreground">
+                                    {user.points} points
+                                </p>
+                            </div>
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onSelect={signOut} className="cursor-pointer">
+                            <LogOut className="mr-2 h-4 w-4" />
+                            <span>Sign Out</span>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            ) : (
+                <div className="hidden md:flex items-center space-x-1">
+                    <Button variant="ghost" asChild>
+                        <Link href="/login">Login</Link>
+                    </Button>
+                    <Button asChild>
+                        <Link href="/signup">Sign Up</Link>
+                    </Button>
+                </div>
+            )}
+            
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8 text-foreground hover:text-primary">
@@ -111,7 +152,7 @@ export function Navbar() {
                     <SheetContent side="right" className="w-[240px] sm:w-[300px]">
                         <SheetTitle className="sr-only">Menu</SheetTitle>
                         <SheetDescription className="sr-only">A list of navigation links for the site.</SheetDescription>
-                        <Link href="/" className="flex items-center space-x-2 mb-8">
+                        <Link href="/" className="flex items-center space-x-2 mb-4">
                             <NextImage
                                 src="/favicon.ico"
                                 alt="TruthSleuth Logo"
@@ -133,6 +174,44 @@ export function Navbar() {
                                 Leaderboard
                                 </Link>
                             </SheetClose>
+                        </div>
+                        <Separator className="my-4"/>
+                        <div className="flex flex-col space-y-2">
+                             {user ? (
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-2 px-1">
+                                        <Avatar className="h-8 w-8">
+                                            <AvatarImage src={user.avatarUrl || ''} alt={user.name} />
+                                            <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                        <div>
+                                            <p className="text-sm font-medium">{user.name}</p>
+                                            <p className="text-xs text-muted-foreground">{user.points} points</p>
+                                        </div>
+                                    </div>
+                                     <SheetClose asChild>
+                                        <Button variant="ghost" onClick={signOut} className="w-full justify-start text-lg">
+                                            <LogOut className="mr-2 h-5 w-5" />
+                                            Sign Out
+                                        </Button>
+                                    </SheetClose>
+                                </div>
+                            ) : (
+                                <>
+                                    <SheetClose asChild>
+                                        <Link href="/login" className="flex items-center p-2 rounded-md transition-colors hover:bg-muted text-lg">
+                                            <LogIn className="mr-2 h-5 w-5" />
+                                            Login
+                                        </Link>
+                                    </SheetClose>
+                                    <SheetClose asChild>
+                                        <Link href="/signup" className="flex items-center p-2 rounded-md transition-colors hover:bg-muted text-lg">
+                                            <UserPlus className="mr-2 h-5 w-5" />
+                                            Sign Up
+                                        </Link>
+                                    </SheetClose>
+                                </>
+                            )}
                         </div>
                     </SheetContent>
                 </Sheet>

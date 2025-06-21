@@ -2,7 +2,7 @@
 export interface User {
   id: string;
   name: string;
-  avatarUrl: string;
+  avatarUrl?: string;
   points: number;
   badges: string[];
 }

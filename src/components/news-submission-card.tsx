@@ -6,7 +6,7 @@ import type { NewsSubmission, User, Evidence } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { ArrowBigUp, ArrowBigDown, MessageSquare, Link as LinkIcon, Plus } from 'lucide-react';
+import { ArrowBigUp, ArrowBigDown, MessageSquare, Link as LinkIcon, Plus, Loader2 } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
@@ -14,6 +14,10 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Separator } from './ui/separator';
 import { Input } from '@/components/ui/input';
+import { useAuth } from '@/context/auth-context';
+import { db } from '@/lib/firebase';
+import { push, ref, set } from 'firebase/database';
+import { useToast } from '@/hooks/use-toast';
 
 type HydratedEvidence = Omit<Evidence, 'userId'> & { user: User | undefined };
 
@@ -26,7 +30,41 @@ interface NewsSubmissionCardProps {
 
 export function NewsSubmissionCard({ submission }: NewsSubmissionCardProps) {
   const { title, content, submittedBy, submittedAt, upvotes, downvotes, evidence } = submission;
+  const { user } = useAuth();
+  const { toast } = useToast();
+
   const [showEvidenceForm, setShowEvidenceForm] = useState(false);
+  const [evidenceText, setEvidenceText] = useState('');
+  const [evidenceLink, setEvidenceLink] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleAddEvidence = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!evidenceText.trim() || !user) return;
+
+    setIsSubmitting(true);
+    try {
+      const evidenceRef = ref(db, `submissions/${submission.id}/evidence`);
+      const newEvidenceRef = push(evidenceRef);
+      await set(newEvidenceRef, {
+        id: newEvidenceRef.key,
+        userId: user.id,
+        text: evidenceText,
+        link: evidenceLink || null,
+        submittedAt: new Date().toISOString()
+      });
+
+      toast({ title: 'Success', description: 'Your evidence has been submitted.' });
+      setEvidenceText('');
+      setEvidenceLink('');
+      setShowEvidenceForm(false);
+    } catch (error) {
+      console.error("Failed to submit evidence:", error);
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to submit evidence.' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const voteTotal = upvotes + downvotes;
   const upvotePercentage = voteTotal > 0 ? (upvotes / voteTotal) * 100 : 50;
@@ -81,7 +119,7 @@ export function NewsSubmissionCard({ submission }: NewsSubmissionCardProps) {
           </AccordionTrigger>
           <AccordionContent>
             <div className="space-y-4 pt-2">
-              {evidence.map(e => (
+              {evidence.length > 0 ? evidence.map(e => (
                 <div key={e.id} className="text-xs p-3 bg-muted/50 rounded-md">
                   <p className="font-semibold">{e.user?.name ?? 'Anonymous'}</p>
                   <p className="text-muted-foreground mt-1">{e.text}</p>
@@ -92,19 +130,36 @@ export function NewsSubmissionCard({ submission }: NewsSubmissionCardProps) {
                     </Link>
                   )}
                 </div>
-              ))}
+              )) : <p className="text-xs text-muted-foreground text-center">No evidence submitted yet.</p>}
               <Separator />
                <div className="pt-2">
-                 <Button variant="outline" size="sm" onClick={() => setShowEvidenceForm(!showEvidenceForm)}>
+                 <Button variant="outline" size="sm" onClick={() => setShowEvidenceForm(!showEvidenceForm)} disabled={!user}>
                    <Plus className="mr-2 h-4 w-4"/>
                    Add Evidence
                  </Button>
-                 {showEvidenceForm && (
-                    <div className="mt-4 space-y-2">
-                        <Textarea placeholder="Share your evidence or source..." />
-                        <Input placeholder="Optional: link to source" />
-                        <Button size="sm">Submit Evidence</Button>
-                    </div>
+                 {showEvidenceForm && user && (
+                    <form onSubmit={handleAddEvidence} className="mt-4 space-y-2">
+                        <Textarea 
+                          placeholder="Share your evidence or source..." 
+                          value={evidenceText} 
+                          onChange={e => setEvidenceText(e.target.value)} 
+                          required 
+                          disabled={isSubmitting}
+                        />
+                        <Input 
+                          placeholder="Optional: link to source" 
+                          value={evidenceLink} 
+                          onChange={e => setEvidenceLink(e.target.value)} 
+                          disabled={isSubmitting}
+                        />
+                        <Button size="sm" type="submit" disabled={isSubmitting || !evidenceText.trim()}>
+                           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
+                           {isSubmitting ? "Submitting..." : "Submit Evidence"}
+                        </Button>
+                    </form>
+                 )}
+                 {!user && showEvidenceForm && (
+                   <p className="text-xs text-muted-foreground mt-2">Please log in to add evidence.</p>
                  )}
                </div>
             </div>
