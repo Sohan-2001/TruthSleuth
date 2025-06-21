@@ -16,13 +16,18 @@ import { Separator } from './ui/separator';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/context/auth-context';
 import { db } from '@/lib/firebase';
-import { push, ref, set } from 'firebase/database';
+import { push, ref, set, runTransaction } from 'firebase/database';
 import { useToast } from '@/hooks/use-toast';
 
 type HydratedEvidence = Omit<Evidence, 'userId'> & { user: User | undefined };
 
 interface NewsSubmissionCardProps {
   submission: Omit<NewsSubmission, 'submittedBy' | 'evidence'> & {
+    id: string;
+    upvotes: number;
+    downvotes: number;
+    upvotedBy?: { [key: string]: boolean };
+    downvotedBy?: { [key: string]: boolean };
     submittedBy: User | undefined;
     evidence: HydratedEvidence[];
   };
@@ -33,10 +38,75 @@ export function NewsSubmissionCard({ submission }: NewsSubmissionCardProps) {
   const { user } = useAuth();
   const { toast } = useToast();
 
+  const [isVoting, setIsVoting] = useState(false);
   const [showEvidenceForm, setShowEvidenceForm] = useState(false);
   const [evidenceText, setEvidenceText] = useState('');
   const [evidenceLink, setEvidenceLink] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleVote = async (voteType: 'up' | 'down') => {
+    if (!user) {
+      toast({
+        variant: 'destructive',
+        title: 'Authentication Required',
+        description: 'You must be logged in to vote.',
+      });
+      return;
+    }
+    setIsVoting(true);
+    const submissionRef = ref(db, `submissions/${submission.id}`);
+
+    try {
+      await runTransaction(submissionRef, (currentData) => {
+        if (currentData) {
+          currentData.upvotedBy = currentData.upvotedBy || {};
+          currentData.downvotedBy = currentData.downvotedBy || {};
+          currentData.upvotes = currentData.upvotes || 0;
+          currentData.downvotes = currentData.downvotes || 0;
+
+          const userId = user.id;
+          const hasUpvoted = currentData.upvotedBy[userId];
+          const hasDownvoted = currentData.downvotedBy[userId];
+
+          if (voteType === 'up') {
+            if (hasUpvoted) {
+              currentData.upvotes--;
+              delete currentData.upvotedBy[userId];
+            } else {
+              currentData.upvotes++;
+              currentData.upvotedBy[userId] = true;
+              if (hasDownvoted) {
+                currentData.downvotes--;
+                delete currentData.downvotedBy[userId];
+              }
+            }
+          } else { // voteType === 'down'
+            if (hasDownvoted) {
+              currentData.downvotes--;
+              delete currentData.downvotedBy[userId];
+            } else {
+              currentData.downvotes++;
+              currentData.downvotedBy[userId] = true;
+              if (hasUpvoted) {
+                currentData.upvotes--;
+                delete currentData.upvotedBy[userId];
+              }
+            }
+          }
+        }
+        return currentData;
+      });
+    } catch (error) {
+      console.error('Vote transaction failed: ', error);
+      toast({
+        variant: 'destructive',
+        title: 'Vote Failed',
+        description: 'Could not update your vote. Please try again.',
+      });
+    } finally {
+      setIsVoting(false);
+    }
+  };
 
   const handleAddEvidence = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,6 +144,10 @@ export function NewsSubmissionCard({ submission }: NewsSubmissionCardProps) {
     if (upvotePercentage < 25) return 'bg-destructive text-destructive-foreground';
     return 'bg-warning text-warning-foreground';
   };
+  
+  const userHasUpvoted = user && submission.upvotedBy && submission.upvotedBy[user.id];
+  const userHasDownvoted = user && submission.downvotedBy && submission.downvotedBy[user.id];
+
 
   return (
     <Card className="overflow-hidden">
@@ -94,12 +168,12 @@ export function NewsSubmissionCard({ submission }: NewsSubmissionCardProps) {
       </CardContent>
       <CardFooter className="bg-muted/50 p-4 flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <Button variant="outline" size="sm" className="gap-2">
-            <ArrowBigUp className="h-5 w-5 text-green-500" />
+          <Button variant="outline" size="sm" className="gap-2" onClick={() => handleVote('up')} disabled={!user || isVoting}>
+            <ArrowBigUp className={cn("h-5 w-5 text-green-500", userHasUpvoted && "fill-current")} />
             <span>{upvotes}</span>
           </Button>
-          <Button variant="outline" size="sm" className="gap-2">
-            <ArrowBigDown className="h-5 w-5 text-red-500" />
+          <Button variant="outline" size="sm" className="gap-2" onClick={() => handleVote('down')} disabled={!user || isVoting}>
+            <ArrowBigDown className={cn("h-5 w-5 text-red-500", userHasDownvoted && "fill-current")} />
             <span>{downvotes}</span>
           </Button>
         </div>

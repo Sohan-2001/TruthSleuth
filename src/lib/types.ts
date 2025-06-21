@@ -25,4 +25,6 @@ export interface NewsSubmission {
   upvotes: number;
   downvotes: number;
   evidence: Evidence[];
+  upvotedBy?: { [key: string]: boolean };
+  downvotedBy?: { [key: string]: boolean };
 }
