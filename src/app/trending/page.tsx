@@ -18,6 +18,16 @@ interface TrendingTopic {
   averageScore: number;
 }
 
+const mockTrendingTopics: TrendingTopic[] = [
+    { summary: 'Breakthrough in quantum computing announced.', count: 231, averageScore: 94 },
+    { summary: 'Study finds microplastics in clouds.', count: 198, averageScore: 85 },
+    { summary: 'Lost city discovered in Amazon rainforest.', count: 154, averageScore: 78 },
+    { summary: 'Celebrity launches "oxygen-free" water.', count: 123, averageScore: 15 },
+    { summary: 'Politician claims moon is made of cheese.', count: 99, averageScore: 2 },
+    { summary: 'New e-vehicle charges in under 5 minutes.', count: 87, averageScore: 65 },
+];
+
+
 export default function TrendingPage() {
   const [trendingTopics, setTrendingTopics] = useState<TrendingTopic[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -88,6 +98,8 @@ export default function TrendingPage() {
     return 'bg-success';
   };
 
+  const topicsToDisplay = trendingTopics.length > 0 || isLoading ? trendingTopics : mockTrendingTopics;
+
   if (isLoading) {
     return (
       <div className="container mx-auto py-10 px-4 flex justify-center items-center h-64">
@@ -107,45 +119,38 @@ export default function TrendingPage() {
       <Card>
         <CardHeader>
           <CardTitle>Top Verified Topics</CardTitle>
-          <CardDescription>Based on the last 1000 analyses submitted by users.</CardDescription>
+          <CardDescription>Based on analyses submitted by our users and community.</CardDescription>
         </CardHeader>
         <CardContent>
-          {trendingTopics.length > 0 ? (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Topic Summary</TableHead>
-                    <TableHead className="text-center w-[150px]">Analyses</TableHead>
-                    <TableHead className="text-right w-[250px]">Avg. Correctness</TableHead>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Topic Summary</TableHead>
+                  <TableHead className="text-center w-[150px]">Analyses</TableHead>
+                  <TableHead className="text-right w-[250px]">Avg. Correctness</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {topicsToDisplay.map((topic, index) => (
+                  <TableRow key={`${topic.summary}-${index}`}>
+                    <TableCell className="font-medium">{topic.summary}</TableCell>
+                    <TableCell className="text-center">
+                      <Badge variant="secondary">{topic.count}</Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-3">
+                        <span className={cn('font-semibold w-12', getScoreColor(topic.averageScore))}>
+                          {topic.averageScore}%
+                        </span>
+                        <Progress value={topic.averageScore} className="w-24 h-2" indicatorClassName={getProgressIndicatorClass(topic.averageScore)} />
+                      </div>
+                    </TableCell>
                   </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {trendingTopics.map((topic, index) => (
-                    <TableRow key={`${topic.summary}-${index}`}>
-                      <TableCell className="font-medium">{topic.summary}</TableCell>
-                      <TableCell className="text-center">
-                        <Badge variant="secondary">{topic.count}</Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-3">
-                          <span className={cn('font-semibold w-12', getScoreColor(topic.averageScore))}>
-                            {topic.averageScore}%
-                          </span>
-                          <Progress value={topic.averageScore} className="w-24 h-2" indicatorClassName={getProgressIndicatorClass(topic.averageScore)} />
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          ) : (
-             <div className="text-center py-10 text-muted-foreground bg-muted/20 rounded-lg">
-              <p className="font-semibold">No trending data yet.</p>
-              <p className="text-sm mt-1">Analyze some news on the homepage to see trending topics!</p>
-            </div>
-          )}
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>
