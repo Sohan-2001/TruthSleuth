@@ -27,3 +27,10 @@ export interface NewsSubmission {
   upvotedBy?: { [key: string]: boolean };
   downvotedBy?: { [key: string]: boolean };
 }
+
+export interface Verification {
+  id: string;
+  summary: string;
+  score: number;
+  analyzedAt: string;
+}

@@ -23,6 +23,7 @@ const AnalyzeNewsTruthfulnessOutputSchema = z.object({
     .max(100)
     .describe('The percentage likelihood that the news is true.'),
   reason: z.string().optional().describe('The reasoning behind the truthfulness score.'),
+  summary: z.string().describe('A brief, neutral summary of the news text, no more than 10 words.'),
 });
 export type AnalyzeNewsTruthfulnessOutput = z.infer<typeof AnalyzeNewsTruthfulnessOutputSchema>;
 
@@ -38,11 +39,12 @@ const analyzeNewsTruthfulnessPrompt = ai.definePrompt({
 
 News Text: {{{newsText}}}
 
-Provide a truthfulness percentage (0-100) and the reasoning behind your assessment.
+Provide a truthfulness percentage (0-100), the reasoning behind your assessment, and a brief, neutral summary of the news text (no more than 10 words).
 Format your response as a JSON object:
 {
   "truthfulnessPercentage": number,
-  "reason": string
+  "reason": string,
+  "summary": string
 }
 `,
 });
@@ -58,4 +60,3 @@ const analyzeNewsTruthfulnessFlow = ai.defineFlow(
     return output!;
   }
 );
-

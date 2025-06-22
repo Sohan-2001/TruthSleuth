@@ -3,7 +3,7 @@
 
 import Link from "next/link"
 import NextImage from "next/image";
-import { Coffee, Menu, Moon, Settings, Sun, LogOut, UserPlus, LogIn, UserCircle } from "lucide-react"
+import { Coffee, Menu, Moon, Settings, Sun, LogOut, UserPlus, LogIn, UserCircle, TrendingUp } from "lucide-react"
 import { useTheme } from "next-themes"
 import * as React from "react"
 
@@ -63,6 +63,12 @@ export function Navbar() {
             </div>
           </Link>
           <nav className="hidden items-center space-x-6 text-sm font-medium md:flex">
+             <Link
+              href="/trending"
+              className="transition-colors hover:text-foreground/80 text-foreground/60"
+            >
+              Trending
+            </Link>
              <Link
               href="/community"
               className="transition-colors hover:text-foreground/80 text-foreground/60"
@@ -163,6 +169,12 @@ export function Navbar() {
                             <span className="font-bold text-foreground">TruthSleuth</span>
                         </Link>
                         <div className="flex flex-col space-y-3">
+                            <SheetClose asChild>
+                                <Link href="/trending" className="transition-colors hover:text-foreground/80 text-foreground text-lg flex items-center">
+                                  <TrendingUp className="mr-2 h-5 w-5" />
+                                  Trending
+                                </Link>
+                            </SheetClose>
                             <SheetClose asChild>
                                 <Link href="/community" className="transition-colors hover:text-foreground/80 text-foreground text-lg">
                                 Community

@@ -16,6 +16,8 @@ import TruthScoreDisplay from '@/components/truth-score-display';
 import { FileCode2, ScanLine, Loader2, Binary } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { db } from '@/lib/firebase';
+import { ref, push, set } from 'firebase/database';
 
 export default function TruthSleuthPage() {
   const [activeTab, setActiveTab] = useState<'text' | 'image'>('text');
@@ -83,6 +85,18 @@ export default function TruthSleuthPage() {
     try {
       const result = await analyzeNewsTruthfulness({ newsText: inputText });
       setAnalysisResult({ ...result, source: 'text' });
+      
+      // Save verification to database
+      if (result.summary) {
+        const verificationsRef = ref(db, 'verifications');
+        const newVerificationRef = push(verificationsRef);
+        await set(newVerificationRef, {
+          summary: result.summary,
+          score: result.truthfulnessPercentage,
+          analyzedAt: new Date().toISOString()
+        });
+      }
+
     } catch (err) {
       console.error("Text analysis error:", err);
       const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
@@ -240,4 +254,3 @@ export default function TruthSleuthPage() {
     </div>
   );
 }
-
