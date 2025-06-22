@@ -20,11 +20,15 @@ interface TrendingTopic {
 
 const mockTrendingTopics: TrendingTopic[] = [
     { summary: 'Breakthrough in quantum computing announced.', count: 231, averageScore: 94 },
+    { summary: 'US President signs new executive order on climate change.', count: 215, averageScore: 92 },
     { summary: 'Study finds microplastics in clouds.', count: 198, averageScore: 85 },
     { summary: 'Lost city discovered in Amazon rainforest.', count: 154, averageScore: 78 },
+    { summary: 'European Union passes landmark AI regulation bill.', count: 145, averageScore: 88 },
     { summary: 'Celebrity launches "oxygen-free" water.', count: 123, averageScore: 15 },
+    { summary: 'New Unified Payment System announced by Indian government.', count: 115, averageScore: 96 },
     { summary: 'Politician claims moon is made of cheese.', count: 99, averageScore: 2 },
     { summary: 'New e-vehicle charges in under 5 minutes.', count: 87, averageScore: 65 },
+    { summary: 'Viral video claims "smart dust" is being sprayed from airplanes.', count: 75, averageScore: 5 },
 ];
 
 
