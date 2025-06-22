@@ -155,7 +155,6 @@ export function NewsSubmissionCard({ submission }: NewsSubmissionCardProps) {
         <CardTitle className="text-xl">{title}</CardTitle>
         <CardDescription className="flex items-center gap-2 text-xs pt-2">
           <Avatar className="h-6 w-6">
-            <AvatarImage src={submittedBy?.avatarUrl} alt={submittedBy?.name} />
             <AvatarFallback>{submittedBy?.name.charAt(0) ?? 'U'}</AvatarFallback>
           </Avatar>
           <span>Submitted by <span className="font-semibold text-foreground">{submittedBy?.name ?? 'Anonymous'}</span></span>

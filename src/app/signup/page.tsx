@@ -31,7 +31,6 @@ export default function SignupPage() {
       await set(ref(db, 'users/' + user.uid), {
         id: user.uid,
         name: name,
-        avatarUrl: `https://placehold.co/40x40.png`,
         points: 0,
         badges: [],
       });
