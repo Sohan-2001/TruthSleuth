@@ -11,6 +11,7 @@ import { PlusCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { SubmitNewsDialog } from '@/components/submit-news-dialog';
+import { mockUsers, mockSubmissions } from '@/lib/mock-data';
 
 export type HydratedSubmission = Omit<NewsSubmissionType, 'submittedBy' | 'evidence'> & {
   submittedBy: User | undefined;
@@ -109,11 +110,16 @@ export default function CommunityPage() {
   }, []);
 
   const hydratedSubmissions: HydratedSubmission[] = useMemo(() => {
-    if (!users.length && (!submissions || submissions.length === 0)) return [];
+    const useMocks = users.length === 0 && submissions.length === 0 && !isLoading;
+    
+    const finalUsers = useMocks ? mockUsers : users;
+    const finalSubmissions = useMocks ? mockSubmissions : submissions;
 
-    const usersMap = new Map(users.map(u => [u.id, u]));
+    if (finalUsers.length === 0 || finalSubmissions.length === 0) return [];
 
-    return submissions
+    const usersMap = new Map(finalUsers.map(u => [u.id, u]));
+
+    return finalSubmissions
       .map(submission => {
         const hydratedEvidence = (submission.evidence || []).map(e => ({
           ...e,
@@ -128,7 +134,7 @@ export default function CommunityPage() {
       })
       .sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());
 
-  }, [users, submissions]);
+  }, [users, submissions, isLoading]);
 
   if (isLoading) {
     return (

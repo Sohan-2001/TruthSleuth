@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Medal, Star, Shield, Loader2 } from 'lucide-react';
+import { mockUsers } from '@/lib/mock-data';
 
 export default function LeaderboardPage() {
   const [users, setUsers] = useState<User[]>([]);
@@ -69,6 +70,8 @@ export default function LeaderboardPage() {
     return <span className="text-sm font-medium">{rank + 1}</span>;
   };
 
+  const usersToDisplay = users.length > 0 || isLoading ? users : mockUsers.sort((a, b) => b.points - a.points);
+
   if (isLoading) {
     return (
       <div className="container mx-auto py-10 px-4 flex justify-center items-center h-64">
@@ -93,8 +96,8 @@ export default function LeaderboardPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {users.length > 0 ? (
-              users.map((user, index) => (
+            {usersToDisplay.length > 0 ? (
+              usersToDisplay.map((user, index) => (
                 <TableRow key={user.id}>
                   <TableCell className="text-center font-bold">
                       <div className="flex justify-center items-center">
