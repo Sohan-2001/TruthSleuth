@@ -3,7 +3,7 @@
 
 import Link from "next/link"
 import NextImage from "next/image";
-import { Coffee, Menu, Moon, Settings, Sun, LogOut, UserPlus, LogIn, UserCircle, TrendingUp } from "lucide-react"
+import { Coffee, Menu, Moon, Settings, Sun, LogOut, UserPlus, LogIn, UserCircle, TrendingUp, Info } from "lucide-react"
 import { useTheme } from "next-themes"
 import * as React from "react"
 
@@ -23,10 +23,12 @@ import { BuyMeACoffeeDialog } from "./buy-me-a-coffee-dialog"
 import { useAuth } from "@/context/auth-context";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Separator } from "./ui/separator";
+import { AboutDialog } from "./about-dialog";
 
 export function Navbar() {
   const { theme, setTheme } = useTheme();
   const [isCoffeeModalOpen, setIsCoffeeModalOpen] = React.useState(false);
+  const [isAboutDialogOpen, setIsAboutDialogOpen] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const { user, signOut } = useAuth();
@@ -139,6 +141,10 @@ export function Navbar() {
                   </DropdownMenuRadioItem>
                 </DropdownMenuRadioGroup>
                 <DropdownMenuSeparator className="bg-border/50" />
+                 <DropdownMenuItem onSelect={() => setIsAboutDialogOpen(true)} className="cursor-pointer focus:bg-accent/50 text-popover-foreground">
+                  <Info className="mr-2 h-4 w-4 text-primary" />
+                  <span>About</span>
+                </DropdownMenuItem>
                 <DropdownMenuItem onSelect={() => setIsCoffeeModalOpen(true)} className="cursor-pointer focus:bg-accent/50 text-popover-foreground">
                   <Coffee className="mr-2 h-4 w-4 text-primary" />
                   <span>Buy me a coffee</span>
@@ -229,6 +235,7 @@ export function Navbar() {
           </div>
         </div>
       </header>
+      <AboutDialog isOpen={isAboutDialogOpen} onOpenChange={setIsAboutDialogOpen} />
       <BuyMeACoffeeDialog isOpen={isCoffeeModalOpen} onOpenChange={setIsCoffeeModalOpen} />
     </>
   )
