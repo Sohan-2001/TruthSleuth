@@ -74,8 +74,8 @@
     "verifications": {
       // Anyone can read for the trending page
       ".read": true,
-      // Only authenticated users can write new verifications
-      ".write": "auth != null",
+      // Anyone can write new verifications
+      ".write": true,
       // Index for fetching recent verifications
       ".indexOn": ["analyzedAt"],
       
