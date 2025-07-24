@@ -19,15 +19,13 @@ import {
   DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu"
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetTitle, SheetDescription, SheetFooter } from "@/components/ui/sheet";
-import { BuyMeACoffeeDialog } from "./buy-me-a-coffee-dialog"
 import { useAuth } from "@/context/auth-context";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Separator } from "./ui/separator";
 import { AboutDialog } from "./about-dialog";
 
 export function Navbar() {
   const { theme, setTheme } = useTheme();
-  const [isCoffeeModalOpen, setIsCoffeeModalOpen] = React.useState(false);
   const [isAboutDialogOpen, setIsAboutDialogOpen] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
@@ -41,6 +39,10 @@ export function Navbar() {
   if (!mounted) {
     return null;
   }
+
+  const handleBuyMeACoffee = () => {
+    window.open("https://razorpay.me/@sarmasol", "_blank");
+  };
 
   return (
     <>
@@ -145,7 +147,7 @@ export function Navbar() {
                   <Info className="mr-2 h-4 w-4 text-primary" />
                   <span>About</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => setIsCoffeeModalOpen(true)} className="cursor-pointer focus:bg-accent/50 text-popover-foreground">
+                <DropdownMenuItem onSelect={handleBuyMeACoffee} className="cursor-pointer focus:bg-accent/50 text-popover-foreground">
                   <Coffee className="mr-2 h-4 w-4 text-primary" />
                   <span>Buy me a coffee</span>
                 </DropdownMenuItem>
@@ -236,7 +238,6 @@ export function Navbar() {
         </div>
       </header>
       <AboutDialog isOpen={isAboutDialogOpen} onOpenChange={setIsAboutDialogOpen} />
-      <BuyMeACoffeeDialog isOpen={isCoffeeModalOpen} onOpenChange={setIsCoffeeModalOpen} />
     </>
   )
 }
