@@ -1,0 +1,87 @@
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        // Users can only write to their own data and only if they are authenticated.
+        ".write": "auth != null && auth.uid === $uid",
+        // Anyone can read user profile data for leaderboards, etc.
+        ".read": true,
+        
+        ".validate": "newData.hasChildren(['id', 'name', 'points'])",
+        "id": { ".validate": "newData.isString() && newData.val() === $uid" },
+        "name": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length < 50" },
+        "points": { ".validate": "newData.isNumber()" },
+        "badges": { ".validate": "newData.isString()" }, // Simple validation for now
+        "$other": { ".validate": false }
+      }
+    },
+    "submissions": {
+      ".read": true, // All submissions are public
+      // Allow read access for queries
+      ".indexOn": ["submittedAt"],
+      
+      "$submissionId": {
+        // Only authenticated users can write/update submissions
+        ".write": "auth != null",
+        
+        // Validation for a new submission
+        ".validate": "newData.hasChildren(['id', 'title', 'content', 'submittedBy', 'submittedAt', 'aiScore', 'upvotes', 'downvotes'])",
+        
+        "id": { ".validate": "newData.isString() && newData.val() === $submissionId" },
+        "title": { ".validate": "newData.isString() && newData.val().length > 10 && newData.val().length <= 150" },
+        "content": { ".validate": "newData.isString() && newData.val().length > 50 && newData.val().length <= 2000" },
+        "submittedBy": { 
+          // On create, submittedBy must be the current user. Cannot be changed later.
+          ".validate": "newData.isString() && newData.val() === auth.uid && (!data.exists() || newData.val() === data.val())"
+        },
+        "submittedAt": { ".validate": "newData.isString()" },
+        "aiScore": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100" },
+        "upvotes": { ".validate": "newData.isNumber()" },
+        "downvotes": { ".validate": "newData.isNumber()" },
+
+        "upvotedBy": {
+          "$uid": {
+            // A user can only vote for themselves
+            ".write": "auth != null && auth.uid === $uid"
+          }
+        },
+        "downvotedBy": {
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid"
+          }
+        },
+        
+        "evidence": {
+          "$evidenceId": {
+             // Only authenticated users can add evidence
+            ".write": "auth != null",
+            ".validate": "newData.hasChildren(['id', 'userId', 'text', 'submittedAt'])",
+            "id": { ".validate": "newData.isString() && newData.val() === $evidenceId" },
+            "userId": { ".validate": "newData.isString() && newData.val() === auth.uid" },
+            "text": { ".validate": "newData.isString() && newData.val().length > 0" },
+            "link": { ".validate": "newData.isString()" },
+            "submittedAt": { ".validate": "newData.isString()" },
+            "$other": { ".validate": false }
+          }
+        },
+        "$other": { ".validate": false }
+      }
+    },
+    "verifications": {
+      // Anyone can read for the trending page
+      ".read": true,
+      // Only authenticated users (from the server/backend) can write new verifications
+      ".write": "auth != null",
+      // Index for fetching recent verifications
+      ".indexOn": ["analyzedAt"],
+      
+      "$verificationId": {
+        ".validate": "newData.hasChildren(['summary', 'score', 'analyzedAt'])",
+        "summary": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 100" },
+        "score": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100" },
+        "analyzedAt": { ".validate": "newData.isString()" },
+        "$other": { ".validate": false }
+      }
+    }
+  }
+}
