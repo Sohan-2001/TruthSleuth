@@ -11,7 +11,10 @@
         "id": { ".validate": "newData.isString() && newData.val() === $uid" },
         "name": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length < 50" },
         "points": { ".validate": "newData.isNumber()" },
-        "badges": { ".validate": "newData.isString()" }, // Simple validation for now
+        "badges": {
+          ".validate": "newData.isString() || newData.hasChildren()",
+          "$other": { ".validate": "newData.isString()" }
+        },
         "$other": { ".validate": false }
       }
     },
@@ -47,6 +50,7 @@
         },
         "downvotedBy": {
           "$uid": {
+            // A user can only vote for themselves
             ".write": "auth != null && auth.uid === $uid"
           }
         },
@@ -59,7 +63,7 @@
             "id": { ".validate": "newData.isString() && newData.val() === $evidenceId" },
             "userId": { ".validate": "newData.isString() && newData.val() === auth.uid" },
             "text": { ".validate": "newData.isString() && newData.val().length > 0" },
-            "link": { ".validate": "newData.isString()" },
+            "link": { ".validate": "newData.isString() || newData.val() == null" },
             "submittedAt": { ".validate": "newData.isString()" },
             "$other": { ".validate": false }
           }
@@ -70,7 +74,7 @@
     "verifications": {
       // Anyone can read for the trending page
       ".read": true,
-      // Only authenticated users (from the server/backend) can write new verifications
+      // Only authenticated users can write new verifications
       ".write": "auth != null",
       // Index for fetching recent verifications
       ".indexOn": ["analyzedAt"],
