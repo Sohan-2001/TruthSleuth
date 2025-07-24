@@ -9,25 +9,8 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { AnalyzeImageTruthfulnessInputSchema, AnalyzeImageTruthfulnessOutputSchema, type AnalyzeImageTruthfulnessInput, type AnalyzeImageTruthfulnessOutput } from '@/lib/types';
 
-const AnalyzeImageTruthfulnessInputSchema = z.object({
-  photoDataUri: z
-    .string()
-    .describe(
-      'A photo containing news article text, as a data URI that must include a MIME type and use Base64 encoding. Expected format: \'data:<mimetype>;base64,<encoded_data>\'.' // Corrected the expected format
-    ),
-});
-
-export type AnalyzeImageTruthfulnessInput = z.infer<typeof AnalyzeImageTruthfulnessInputSchema>;
-
-const AnalyzeImageTruthfulnessOutputSchema = z.object({
-  truthfulnessPercentage: z
-    .number()
-    .describe('The likelihood the submitted content is true, expressed as a percentage (0-100).'),
-});
-
-export type AnalyzeImageTruthfulnessOutput = z.infer<typeof AnalyzeImageTruthfulnessOutputSchema>;
 
 export async function analyzeImageTruthfulness(
   input: AnalyzeImageTruthfulnessInput

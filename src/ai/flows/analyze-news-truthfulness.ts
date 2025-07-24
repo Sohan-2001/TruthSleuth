@@ -9,23 +9,8 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { AnalyzeNewsTruthfulnessInputSchema, AnalyzeNewsTruthfulnessOutputSchema, type AnalyzeNewsTruthfulnessInput, type AnalyzeNewsTruthfulnessOutput } from '@/lib/types';
 
-const AnalyzeNewsTruthfulnessInputSchema = z.object({
-  newsText: z.string().describe('The news text to analyze for truthfulness.'),
-});
-export type AnalyzeNewsTruthfulnessInput = z.infer<typeof AnalyzeNewsTruthfulnessInputSchema>;
-
-const AnalyzeNewsTruthfulnessOutputSchema = z.object({
-  truthfulnessPercentage: z
-    .number()
-    .min(0)
-    .max(100)
-    .describe('The percentage likelihood that the news is true.'),
-  reason: z.string().optional().describe('The reasoning behind the truthfulness score.'),
-  summary: z.string().describe('A brief, neutral summary of the news text, no more than 10 words.'),
-});
-export type AnalyzeNewsTruthfulnessOutput = z.infer<typeof AnalyzeNewsTruthfulnessOutputSchema>;
 
 export async function analyzeNewsTruthfulness(input: AnalyzeNewsTruthfulnessInput): Promise<AnalyzeNewsTruthfulnessOutput> {
   return analyzeNewsTruthfulnessFlow(input);

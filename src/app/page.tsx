@@ -10,22 +10,25 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from "@/hooks/use-toast";
-import { analyzeNewsTruthfulness, type AnalyzeNewsTruthfulnessOutput } from '@/ai/flows/analyze-news-truthfulness';
-import { analyzeImageTruthfulness, type AnalyzeImageTruthfulnessOutput } from '@/ai/flows/analyze-image-truthfulness';
+import { analyzeNewsTruthfulness } from '@/ai/flows/analyze-news-truthfulness';
+import { analyzeImageTruthfulness } from '@/ai/flows/analyze-image-truthfulness';
+import { analyzeUrlTruthfulness } from '@/ai/flows/analyze-url-truthfulness';
+import type { AnalyzeNewsTruthfulnessOutput, AnalyzeImageTruthfulnessOutput, AnalyzeUrlTruthfulnessOutput } from '@/lib/types';
 import TruthScoreDisplay from '@/components/truth-score-display';
-import { FileCode2, ScanLine, Loader2, Binary } from 'lucide-react';
+import { FileCode2, ScanLine, Loader2, Binary, Link } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { db } from '@/lib/firebase';
 import { ref, push, set } from 'firebase/database';
 
 export default function TruthSleuthPage() {
-  const [activeTab, setActiveTab] = useState<'text' | 'image'>('text');
+  const [activeTab, setActiveTab] = useState<'text' | 'image' | 'url'>('text');
   const [inputText, setInputText] = useState<string>('');
+  const [inputUrl, setInputUrl] = useState<string>('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageDataUrl, setImageDataUrl] = useState<string | null>(null);
   
-  type AnalysisResult = (AnalyzeNewsTruthfulnessOutput & { source: 'text' }) | (AnalyzeImageTruthfulnessOutput & { source: 'image' });
+  type AnalysisResult = (AnalyzeNewsTruthfulnessOutput & { source: 'text' | 'url' }) | (AnalyzeImageTruthfulnessOutput & { source: 'image' });
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -45,7 +48,6 @@ export default function TruthSleuthPage() {
       resultContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }, [analysisResult, isLoading, error, isMobile]);
-
 
   const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -111,6 +113,45 @@ export default function TruthSleuthPage() {
     }
   };
 
+  const handleUrlAnalysis = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!inputUrl.trim()) {
+      setError('Please enter a URL to analyze.');
+      toast({ variant: "destructive", title: "Input Error", description: "URL cannot be empty." });
+      return;
+    }
+    setIsLoading(true);
+    setAnalysisResult(null);
+    setError(null);
+    try {
+      const result = await analyzeUrlTruthfulness({ url: inputUrl });
+      setAnalysisResult({ ...result, source: 'url' });
+      
+      // Save verification to database
+      if (result.summary) {
+        const verificationsRef = ref(db, 'verifications');
+        const newVerificationRef = push(verificationsRef);
+        await set(newVerificationRef, {
+          summary: result.summary,
+          score: result.truthfulnessPercentage,
+          analyzedAt: new Date().toISOString()
+        });
+      }
+
+    } catch (err) {
+      console.error("URL analysis error:", err);
+      const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
+      setError(`Failed to analyze URL: ${errorMessage}`);
+      toast({
+        variant: "destructive",
+        title: "Analysis Error",
+        description: `Could not analyze the URL. ${errorMessage}`,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleImageAnalysis = async (e: FormEvent) => {
     e.preventDefault();
     if (!imageDataUrl) {
@@ -152,12 +193,12 @@ export default function TruthSleuthPage() {
           <CardHeader className="border-b border-primary/50 p-3 sm:p-4 md:p-6">
             <CardTitle className="text-lg sm:text-xl md:text-2xl font-headline text-foreground">Engage Analysis Core</CardTitle>
             <CardDescription className="text-muted-foreground pt-1 text-xs sm:text-sm">
-              Submit text-based intel or visual data for veracity assessment.
+              Submit text-based intel, visual data, or a URL for veracity assessment.
             </CardDescription>
           </CardHeader>
           <CardContent className="p-3 sm:p-4 md:p-6">
-            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'text' | 'image')} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-4 sm:mb-6 bg-muted/30 border border-accent/30 rounded-sm">
+            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'text' | 'image' | 'url')} className="w-full">
+              <TabsList className="grid w-full grid-cols-3 mb-4 sm:mb-6 bg-muted/30 border border-accent/30 rounded-sm">
                 <TabsTrigger 
                   value="text" 
                   className="text-xs sm:text-sm py-1.5 sm:py-2 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground data-[state=active]:shadow-[0_0_12px_hsla(var(--accent),0.7)] data-[state=active]:font-semibold rounded-sm"
@@ -169,6 +210,12 @@ export default function TruthSleuthPage() {
                   className="text-xs sm:text-sm py-1.5 sm:py-2 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground data-[state=active]:shadow-[0_0_12px_hsla(var(--accent),0.7)] data-[state=active]:font-semibold rounded-sm"
                 >
                   <ScanLine className="mr-1 sm:mr-1.5 h-3 w-3 sm:h-4 sm:w-4" /> Image Scan
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="url" 
+                  className="text-xs sm:text-sm py-1.5 sm:py-2 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground data-[state=active]:shadow-[0_0_12px_hsla(var(--accent),0.7)] data-[state=active]:font-semibold rounded-sm"
+                >
+                  <Link className="mr-1 sm:mr-1.5 h-3 w-3 sm:h-4 sm:w-4" /> URL Scan
                 </TabsTrigger>
               </TabsList>
               
@@ -220,6 +267,28 @@ export default function TruthSleuthPage() {
                   </Button>
                 </form>
               </TabsContent>
+
+              <TabsContent value="url">
+                <form onSubmit={handleUrlAnalysis} className="space-y-3 sm:space-y-4 md:space-y-6">
+                  <Input
+                    placeholder="https://example.com/news-article"
+                    value={inputUrl}
+                    onChange={(e) => {
+                      setInputUrl(e.target.value);
+                      setError(null);
+                      setAnalysisResult(null);
+                    }}
+                    type="url"
+                    className="text-xs sm:text-sm rounded-sm shadow-sm focus:ring-primary focus:border-primary bg-background/70 border-input placeholder-muted-foreground/70"
+                    disabled={isLoading}
+                  />
+                  <Button type="submit" className="w-full text-sm py-2 sm:text-base sm:py-2.5 md:text-lg md:py-3 rounded-sm" disabled={isLoading || !inputUrl.trim()}>
+                    {isLoading ? <Loader2 className="mr-2 h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 animate-spin text-primary-foreground" /> : <Binary className="mr-2 h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 text-primary-foreground" />}
+                    Execute Analysis
+                  </Button>
+                </form>
+              </TabsContent>
+
             </Tabs>
           </CardContent>
         </Card>
@@ -242,7 +311,7 @@ export default function TruthSleuthPage() {
             {analysisResult && !isLoading && !error && (
               <TruthScoreDisplay 
                 score={analysisResult.truthfulnessPercentage} 
-                reason={analysisResult.source === 'text' ? analysisResult.reason : undefined} 
+                reason={analysisResult.source !== 'image' ? analysisResult.reason : undefined} 
               />
             )}
           </div>

@@ -3,3 +3,4 @@ config();
 
 import '@/ai/flows/analyze-news-truthfulness.ts';
 import '@/ai/flows/analyze-image-truthfulness.ts';
+import '@/ai/flows/analyze-url-truthfulness.ts';

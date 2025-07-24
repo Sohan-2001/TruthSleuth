@@ -53,4 +53,3 @@ const TruthScoreDisplay: FC<TruthScoreDisplayProps> = ({ score, reason }) => {
 };
 
 export default TruthScoreDisplay;
-
